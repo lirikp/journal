@@ -1,0 +1,22 @@
+{% load static %}
+
+{% block header %}
+    <nav class="navbar navbar-text-color navbar_my_setting ">
+        <a class="navbar-brand" href="#">
+            <img src="{% static "journal/media/logo180.png" %}" height="50" alt="">
+        </a>
+        <a class="navbar-brand navbar-text-h2-set" href="/">Журнал АМУ при МГК им. П.И. Чайковского</a>
+
+
+        <ul class="navbar-nav inline">
+            <li class="nav-item">
+                <span>
+                    <label class="navbar-brand navbar-text-h2-set">Добро пожаловать, {{ userName }}</label>
+                    <a class="nav-link navbar-text-h2-set" href="{% url "users:logout" %}" class="btn" style="display: inline;">Выход</a>
+                </span>
+            </li>
+
+        </ul>
+
+    </nav>
+{% endblock %}

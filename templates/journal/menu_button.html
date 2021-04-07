@@ -1,0 +1,74 @@
+{% load templ_extras %}
+
+<div class="row" style="margin: 10px auto;">
+    <div class="btn-group">
+        <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+            Выбор дисциплины
+        </button>
+
+        <div class="dropdown-menu">
+            {% for discipline in disciplines %}
+                <a class="dropdown-item" {% if discipline.paid_discip %}style="background-color: violet" {% endif %}
+                   href="{% url 'discipline:discipline_detail' discipline.id %}">{{ discipline }}</a>
+            {% endfor %}
+        </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                Выбор отчёта
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="{% url 'reports:report_schedule' %}">Расписание
+                    студента</a>
+                <a class="dropdown-item" href="{% url 'reports:report_scorecard' %}">Оценочная
+                    ведомость</a>
+                <a class="dropdown-item" href="{% url 'reports:report_all_student_all_items_with_year' %}">Оценки
+                    по
+                    студентам</a>
+                <a class="dropdown-item" href="{% url 'reports:report_ktp' %}">Отчёт КТП</a>
+                <a class="dropdown-item" href="{% url 'reports:arch_last_semestr' %}">Журнал прошлого семестра</a>
+                {% if user.is_staff %}
+                    <a class="dropdown-item" href="{% url 'reports:schedule_teacher' %}">Расписание преподавателя</a>
+                    <a class="dropdown-item" href="{% url 'reports:journal_manager' %}">Журналы преподавателей</a>
+                    <a class="dropdown-item" href="{% url 'reports:contacts_teacher' %}">Контакты преподавателей</a>
+                    <a class="dropdown-item" href="{% url 'reports:contacts_student' %}">Контакты студентов</a>
+                    <a class="dropdown-item" href="{% url 'reports:workload_all' %}">Нагрузка (сводная)</a>
+
+                {% endif %}
+
+                {% if request.user|has_group:"curator" %}
+                    <a class="dropdown-item" href="{% url 'reports:schedule_teacher' %}">Расписание преподавателя</a>
+                    <a class="dropdown-item" href="{% url 'reports:journal_manager' %}">Журналы преподавателей</a>
+                    <a class="dropdown-item" href="{% url 'reports:contacts_teacher' %}">Контакты преподавателей</a>
+                    <a class="dropdown-item" href="{% url 'reports:contacts_student' %}">Контакты студентов</a>
+                    <a class="dropdown-item" href="{% url 'reports:workload_all' %}">Нагрузка (сводная)</a>
+                {% endif %}
+
+                {% if request.user|has_group:"course_teacher" %}
+                    <a class="dropdown-item" href="{% url 'reports:contacts_teacher' %}">Контакты преподавателей</a>
+                    <a class="dropdown-item" href="{% url 'reports:contacts_student' %}">Контакты студентов</a>
+
+                {% endif %}
+                <a class="dropdown-item" href="{% url 'reports:workload' %}">Нагрузка</a>
+            </div>
+        </div>
+        {% if user.is_staff %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    Дата архива
+                </button>
+                <div class="dropdown-menu">
+
+                    {% for arch_year in arch_dates %}
+                        <a class="dropdown-item" href="{% url 'arch:main_arch' arch_year.d %}">{{ arch_year.d }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+
+    </div>
+
+</div>

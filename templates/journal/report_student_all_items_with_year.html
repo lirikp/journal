@@ -1,0 +1,121 @@
+{% load static %}
+{% load templ_extras %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Save material</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sen:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static "journal/css/bootstrap.min.css" %}">
+    <script src="{% static "journal/js/journal_main.js" %}"></script>
+
+    <script src="{% static "journal/js/jquery-3.3.1.slim.min.js" %}"></script>
+    <script src="{% static "journal/js/popper.min.js" %}"></script>
+    <script src="{% static "journal/js/bootstrap.min.js" %}"></script>
+    <link rel="stylesheet" href="{% static "journal/css/main.css" %}">
+
+</head>
+<body onload="loadPage()">
+{% block header %}
+    {% include "journal/header.html" %}
+{% endblock %}
+
+<section id="tabs" class="project-tab">
+    <div class="container">
+
+        <div class="py-3 text-left">
+            <span>
+                {% report_student_all_scores report_student_all_items_with_year as data %}
+                <h4>Студент: <b>{{ data|slice:":1"|last }}, {{ data|slice:"4:5"|last }} курс, {{ student_name.depStudId.nameDep }}</b></h4>
+            </span>
+
+        </div>
+        {% if  data|slice:"1:2"|last|length > 0 %}
+            <div class="outer">
+                <div class="inner-table-academic-performance" id="inner-table">
+                    <table id="table-body" class="table-academic-performance "
+                           style="max-width:100%; border-color: black;border: 2px solid; border-collapse:collapse; margin-left: -2px;"
+                           cellspacing="0">
+                        <tbody>
+                        <tr>
+                            <th>Предмет</th>
+                            <th style="left: 160px;">Преподаватель</th>
+                            {% for date in data|slice:"1:2"|last %}
+                                <td style="width: 50px;">
+                                    {{ date|date:'d.m' }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        {% with counter=data|slice:"2:3"|last %}
+                            {% for nameDiscipline in counter %}
+                                <tr>
+                                    <th>{{ nameDiscipline }}</th>
+
+                                    {% for date in data|slice:"1:2"|last %}
+                                        {% get_value_from_dict_matrix data|slice:"3:4"|last nameDiscipline date as value %}
+                                        {% if forloop.first %}
+                                            {% get_teach_name data|slice:"3:4"|last nameDiscipline as teach_name %}
+                                            <th style="left: 160px;">{{ teach_name }}</th>
+                                        {% endif %}
+                                        <td style="width: 50px; font-size: 2rem;
+                                                {% if value.meet_id == 2 %}
+                                                    background-color: #f1e214;
+                                                {% elif value.meet_id != 1 and value.result %}
+                                                    background-color: #B6EB9E;
+                                                {% endif %}"
+                                            title="{{ value.descriptionScore }}">
+                                            {{ value.result }}
+                                        </td>
+                                    {% endfor %}
+
+                                </tr>
+                            {% endfor %}
+                            {% if counter|length > 10 %}
+                                <tr>
+                                    <th>Предмет</th>
+                                    <th style="left: 160px;">Преподаватель</th>
+                                    {% for date in data|slice:"1:2"|last %}
+                                        <td style="width: 50px;">
+                                            {{ date|date:'d.m' }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+
+                            {% endif %}
+                        {% endwith %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <div class="py-3 text-left">
+                <span>Список пуст</span>
+            </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-md-10 order-md-1 mb-1">
+                <a href="{% url "discipline:discipline_detail" discipline_id %}"
+                   class="btn btn-lg btn-outline-dark btn-secondary text-button "
+                   style="margin-top: 15px; color: #fff; font-weight: 400;">&lt Вернуться</a>
+
+            </div>
+        </div>
+
+
+    </div>
+</section>
+
+
+{% block footer %}
+    {% include "journal/footer.html" %}
+{% endblock %}
+
+</body>
+</html>

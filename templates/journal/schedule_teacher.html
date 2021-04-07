@@ -1,0 +1,25 @@
+<form action="." method="post">
+    {% csrf_token %}
+    <div class="text-center" style="margin-top: 15px;">
+        <h3>Индивидуальное расписание преподавателя, период: {{ d_left|date:'d-m-Y' }}
+            <-> {{ d_right|date:'d-m-Y' }} </h3>
+    </div>
+
+    <div class="row">
+        <label style="margin-bottom: 0;"><h5 style="margin-bottom: 0;">Преподаватель: </h5></label>
+        {{ form.teacher }}
+    </div>
+
+    <div class="row"><label class="scorecard-label"><h5>Платное: {{ form.paid }}</h5></label>
+    </div>
+
+    <div class="col-md-10 order-md-1 mb-1">
+        <input class="btn btn-lg btn-outline-dark btn-secondary text-button "
+               style="margin-top: 15px; margin-left: -30px; color: #fff ; font-weight: 400;"
+               type="submit" value="Посмотреть расписание">
+    </div>
+
+    {% block table_schedule %}
+        {% include "journal/table_schedule_teacher.html" %}
+    {% endblock %}
+</form>

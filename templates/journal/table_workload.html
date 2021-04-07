@@ -1,0 +1,30 @@
+{% load templ_extras %}
+{% make_workload table_workload as table %}
+
+<table class="table-schedule " cellspacing="0">
+    <tr>
+        <td></td>
+        <td><h3>Бюджетное</h3></td>
+        <td><h3>Платное</h3></td>
+    </tr>
+    {% for month,info_list in table.items %}
+        <tr>
+            <td>
+                {{ month }}
+            </td>
+            {% for num in info_list %}
+                <td>
+                    {{ num }}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
+
+{% comment %}
+{% if disciplines|length %}
+{% endcomment %}
+
+{% comment %}
+{% endif %}
+{% endcomment %}

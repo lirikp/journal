@@ -1,0 +1,9 @@
+{% load templ_extras %}
+
+<div class="text-center" style="margin-top: 15px;">
+    <h3>Отчёт о нагрузке, период: {{ d_left|convert_str_date|date:'d-m-Y' }}
+        <-> {{ d_right|convert_str_date|date_minus_one_day|date:'d-m-Y' }} </h3>
+</div>
+{% block table_schedule %}
+    {% include "journal/table_workload_all.html" %}
+{% endblock %}

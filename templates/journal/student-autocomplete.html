@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Autocomplete</title>
+</head>
+<body>
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+    <div>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit"/>
+        </form>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+
+    {{ form.media }}
+{% endblock %}
+</body>
+</html>

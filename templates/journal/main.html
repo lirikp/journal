@@ -1,0 +1,238 @@
+{% load static %}
+{% load templ_extras %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Main page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sen:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static "journal/css/bootstrap.min.css" %}">
+
+    <script src="{% static "journal/js/jquery-3.3.1.slim.min.js" %}"></script>
+    <script src="{% static "journal/js/popper.min.js" %}"></script>
+    <script src="{% static "journal/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "journal/js/journal_main.js" %}"></script>
+    <link rel="stylesheet" href="{% static "journal/css/main.css" %}">
+</head>
+<body onload="loadPage()">
+
+
+<!-- Header -->
+{% block header %}
+    {% include "journal/header.html" %}
+{% endblock %}
+<!-- END Header -->
+
+<section id="tabs" class="project-body">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+                {% block menu_button %}
+                    {% include "journal/menu_button.html" %}
+                {% endblock %}
+
+                {% if item_name %}
+                    <div class="header-text-discipline">
+                        <h4 style="text-align: center; margin-top: 35px;">
+                            {{ item_name }}
+                            ({% text_week_day discipline.dayofWeekStartLecture False %},
+                            {{ discipline.timeStartLecture|date:"H:i" }}-{{ discipline.timeFinishLecture|date:"H:i" }})
+                            {% if material_table|length_is:"0" %}
+                                <p style="color: red;">* Для появления списка студентов в данной дисциплине необходимо
+                                    перейти на вкладку "Краткое содержание материала" и добавить одну дату</p>
+                            {% endif %}
+                        </h4>
+                    </div>
+
+
+                    <nav class="pan-nav-set">
+                        <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                            <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home"
+                               role="tab" aria-controls="nav-home" aria-selected="true">Оценки по дисциплине</a>
+                            <a class="nav-item nav-link " id="nav-profile-tab" data-toggle="tab"
+                               href="#nav-profile"
+                               role="tab" aria-controls="nav-profile" aria-selected="false">Краткое содержание
+                                материала</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
+                         aria-labelledby="nav-home-tab">
+                        <div class="outer">
+                            <div class="inner" id="inner-table">
+                                <table class="table-discip-score " cellspacing="0">
+                                    <tbody>
+                                    {% count_students_from_discipline students_from_discipline as data %}
+                                    {% take_score_students_from_data data as scores %}
+                                    {% take_dates_students_from_data data as dates %}
+                                    {% with count_lines=data|slice:"1:2"|last|length %}
+                                        {% if data|slice:"1:2"|last|length > 0 %}
+                                            <tr>
+                                                <th style="width: 33px; text-align: center;">№</th>
+                                                <th style="left: 31px;">Фамилия Имя</th>
+                                                {% for date, m_id in dates.items %}
+                                                    <td style="width: 50px;
+                                                            {% type_lesson data m_id as meet_not_lesson %}
+                                                            {% if meet_not_lesson == 'itogo_1' or meet_not_lesson == 'itogo_2' or meet_not_lesson == 'itogo_3' or meet_not_lesson == 'itogo_4' %}
+                                                                background-color: #B6EB9E;
+                                                            {% elif meet_not_lesson == 'exam' %}
+                                                                background-color: #f1e214;
+                                                            {% endif %}">
+                                                        <a class="btn btn-outline-secondary"
+                                                           href="{% url 'material:material_change' discipline_pk=discipline_id material_pk=m_id %}">{{ date|date:'d.m' }}</a>
+                                                    </td>
+                                                {% endfor %}
+                                            </tr>
+                                            {% for student_name,scores in scores.items %}
+                                                <tr>
+                                                    <th style="width: 33px; text-align: center; color: darkgrey; font-weight: 300;">{{ forloop.counter }}</th>
+
+                                                    {% for date_score, score in scores.items %}
+                                                        {% if forloop.first %}
+
+                                                            <th style="left: 31px;"><a class="student-link"
+                                                                                       href="{% url 'reports:report_student_all_items_with_year'  student_pk=score.student_id discipline_pk=discipline_id %}">{{ student_name }}</a>
+                                                            </th>
+                                                        {% endif %}
+                                                        <td>
+                                                            <a class="btn btn-outline-secondary"
+                                                               title=" {{ score.descriptionScore }} "
+                                                               href="{% url 'score:score_change' discipline_pk=score.discipline_id material_pk=score.material_id student_pk=score.student_id teacher_pk=score.teacher_id %}"
+                                                               style="width: 100%; height: 100%; border-radius: 0; border: 0px;
+                                                                       {% if score.status_in_study != 0 %}
+                                                                           background-color: #c8cbcf;
+                                                                       {% endif %}
+
+                                                                       ">
+                                                                {% if score.result is not None %}
+                                                                    {{ score.result }}
+                                                                {% else %}
+                                                                    &hellip;
+                                                                {% endif %}
+                                                            </a>
+                                                        </td>
+                                                    {% endfor %}
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                        {% if count_lines > 10 %}
+                                            <tr>
+                                                <th style="width: 33px; text-align: center;">№</th>
+                                                <th style="left: 31px;">Фамилия Имя</th>
+                                                {% for date, m_id in dates.items %}
+                                                    <td style="width: 50px;
+                                                            {% type_lesson data m_id as meet_not_lesson %}
+                                                            {% if meet_not_lesson == 'itogo_1' or meet_not_lesson == 'itogo_2' or meet_not_lesson == 'itogo_3' or meet_not_lesson == 'itogo_4' %}
+                                                                background-color: #B6EB9E;
+                                                            {% elif meet_not_lesson == 'exam' %}
+                                                                background-color: #f1e214;
+                                                            {% endif %}">
+                                                        {{ date|date:'d.m' }}
+                                                    </td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endif %}
+                                    {% endwith %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade " id="nav-profile" role="tabpanel"
+                         aria-labelledby="nav-profile-tab"
+                         style="margin-top: 20px;">
+                        <form action="{% url 'material:material_checkbox_copy' discipline_id %}"
+                              method="post">
+                            {% count_materials material_table as cnt %}
+
+                            <div class="table-container table-responsive">
+                                <table class="table-discip-material">
+                                    <thead>
+                                    <tr>
+                                        <th>Дата события</th>
+                                        <th>Кол-во уч. часов</th>
+                                        <th>Что пройдено на уроке</th>
+                                        <th>Задание на дом</th>
+                                        <th>Тип встречи</th>
+                                        <th><input type="checkbox" name="material_choice_control"
+                                                   onclick="select_all()"/></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if cnt > 0 %}
+                                        {% for material in material_table %}
+                                            {% if forloop.counter|divisibleby:2 %}
+                                                <tr class="even">
+                                                    {% else %}
+                                                <tr class="odd">
+                                            {% endif %}
+                                        <td>
+                                            <a class="btn btn-outline-secondary"
+                                               href="{% url 'material:material_change' discipline_pk=discipline_id material_pk=material.id %}">{{ material.dateInit|date:'d.m.Y' }}</a>
+                                        </td>
+                                        <td>{{ material.countHour }}</td>
+                                        <td class="table-discip-material-topic">{{ material.topic }}</td>
+                                        <td>{{ material.homework }}</td>
+                                        <td>{{ material.meetId }}</td>
+                                        <td><input type="checkbox" name="material_choice_{{ material.pk }}" id="id_material_choice"/></td>
+                                        </tr>
+
+
+                                        {% endfor %}
+                                    {% endif %}
+
+                                    {% count_hours material_table as total_hours %}
+                                    {% if total_hours %}
+                                        <tr>
+
+                                            <td>Всего:</td>
+                                            <td>{{ total_hours }}</td>
+                                            <td colspan="4"></td>
+                                        </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td colspan="6">
+                                            <a class="btn btn-outline-secondary"
+                                               href="{% url 'material:material_new' discipline_id %}">Добавить</a>
+                                            {% if material_table|length > 0 %}
+                                                <a onclick="return delMaterial()" class="btn btn-danger"
+                                                   href="{% url 'material:material_checkbox_del' discipline_id %}">Удалить
+                                                    всё</a>
+
+                                                {% csrf_token %}
+
+                                                <p> Копирование материалов в: {{ formMaterial.disciplines }}
+                                                    <input class="btn btn-info" type="submit" value="Копировать" onclick="checkbox_selected()">
+                                                </p>
+
+
+                                            {% endif %}
+
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block footer %}
+    {% include "journal/footer.html" %}
+{% endblock %}
+
+
+</body>

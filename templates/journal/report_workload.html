@@ -1,0 +1,54 @@
+{% load static %}
+{% load templ_extras %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчёт о загрузке преподавателя</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sen:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static "journal/css/bootstrap.min.css" %}">
+
+    <script src="{% static "journal/js/jquery-3.3.1.slim.min.js" %}"></script>
+    <script src="{% static "journal/js/popper.min.js" %}"></script>
+    <script src="{% static "journal/js/bootstrap.min.js" %}"></script>
+    <link rel="stylesheet" href="{% static "journal/css/main.css" %}">
+
+</head>
+<body>
+{% block header %}
+    {% include "journal/header.html" %}
+{% endblock %}
+
+<section id="tabs" class="project-tab">
+    <div class="container">
+
+        {% block menu_button %}
+            {% include "journal/menu_button.html" %}
+        {% endblock %}
+
+{% comment %}
+{% endcomment %}
+        {% block schedule %}
+            {% include "journal/list_of_workload.html" %}
+        {% endblock %}
+
+
+    </div>
+
+
+</section>
+
+
+{% block footer %}
+    {% include "journal/footer.html" %}
+{% endblock %}
+
+
+</body>
+</html>

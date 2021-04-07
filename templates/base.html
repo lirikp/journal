@@ -1,0 +1,19 @@
+{% load static %}
+<!doctype  html>
+<html  lang="en">
+<head>
+<link rel="stylesheet" href="{% static "journal/css/bootstrap.min.css" %}">
+<title>Идентификация</title>
+</head>
+<body>
+  <div  class="container" style="margin-top: 40px; text-align: center">
+    <div  class="row justify-content-center">
+      <div  class="col-4">
+      <h1  class="text-center">Идентификация</h1>
+      {% block main %}
+      {% endblock %}
+      </div>
+    </div>
+  </div>
+</body>
+</html>

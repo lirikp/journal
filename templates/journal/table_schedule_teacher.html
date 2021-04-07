@@ -1,0 +1,64 @@
+{% load templ_extras %}
+
+<table class="table-schedule " cellspacing="0">
+    <tbody>
+    {% if report_schedule|length %}
+        <tr>
+            <td style="border: 2px solid #000; font-weight: 700;" colspan="3">Аудиторные часы</td>
+        </tr>
+        <tr>
+            <td style="border: 2px solid #000; font-weight: 700;" colspan="3">
+                Преподаватель: {{ teacher_name }}, {{ teacher_name.depTeachId }}</td>
+        </tr>
+        <tr>
+            <td style="width: 13%; font-weight: 700;">Время</td>
+            <td style="width: 75%; font-weight: 700;">Предмет</td>
+            <td style="font-weight: 700;">Ак. часов</td>
+
+        </tr>
+        {% for data in report_schedule %}
+            {% if day_int_last %}
+                {% if day_int_last != data.dayofWeekStartLecture %}
+                    {% text_week_day data.dayofWeekStartLecture False as day_week_str %}
+                    <tr>
+                        <td style="border: 2px solid #000; font-weight: 700;"
+                            colspan="3">{{ day_week_str }}</td>
+                    </tr>
+                    {% text_week_day data.dayofWeekStartLecture True as day_int_last %}
+                {% endif %}
+            {% else %} {# Первая итерация когда day_int_last ничему не равен #}
+                {% text_week_day data.dayofWeekStartLecture True as day_int_last %}
+                {% text_week_day data.dayofWeekStartLecture False as day_week_str %}
+                <tr>
+                    <td style="border: 2px solid #000; font-weight: 700;"
+                        colspan="3">{{ day_week_str }}</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td>{{ data.timeStartLecture|date:"H:i" }}-{{ data.timeFinishLecture|date:"H:i" }}</td>
+                <td>{{ data.itemName }}</td>
+                <td>{% count_hour data %}</td>
+                {% if sum %}
+                    {% count_hours_add sum data as sum %}
+                {% else %}
+                    {% count_hours_add 0 data as sum %}
+                {% endif %}
+
+            </tr>
+            {% if forloop.last %}
+                {% if sum %}
+
+                {% else %}
+                    {% count_hours_add 0 data as sum %}
+                {% endif %}
+                <tr>
+                    <td style="border: 2px solid #000; font-weight: 700; text-align: right;" colspan="2">
+                        Всего часов:
+                    </td>
+                    <td style="border: 2px solid #000; font-weight: 700;"><strong>{{ sum }}</strong></td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    </tbody>
+</table>

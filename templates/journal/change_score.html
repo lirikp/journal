@@ -1,0 +1,104 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Save material</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sen:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static "journal/css/bootstrap.min.css" %}">
+
+    <script src="{% static "journal/js/jquery-3.3.1.slim.min.js" %}"></script>
+    <script src="{% static "journal/js/popper.min.js" %}"></script>
+    <script src="{% static "journal/js/bootstrap.min.js" %}"></script>
+    <link rel="stylesheet" href="{% static "journal/css/main.css" %}">
+
+</head>
+<body>
+{% block header %}
+    {% include "journal/header.html" %}
+{% endblock %}
+
+<section id="tabs" class="project-tab">
+    <div class="container">
+        <div class="py-3 text-left">
+            <span>
+                <h4>Студент: <b>{{ info.student_name }}</b></h4>
+
+            </span>
+        </div>
+        <div class="py-3 text-left">
+
+            <span>
+                <h4>Дисциплина: <b>{{ info.disciplin }}</b></h4>
+
+            </span>
+        </div>
+        <div class="py-3 text-left">
+            <span>
+                <h4>Материал: <b>{{ info.material.topic }}</b></h4>
+
+            </span>
+        </div>
+        <form action="." method="post">
+            {% csrf_token %}
+
+            <div class="py-3 text-left">
+                    <span>
+                        <h4>Оценка: <span>{{ form.result }} <div
+                                style="color: red"> {{ form.result.errors }}</div></span></h4>
+                        </span>
+            </div>
+            <div class="py-3 text-left">
+                <span>
+                    <label>Информация к оценке</label>
+                    <div style="color: red"> {{ form.descriptionScore.errors }} {{ form.descriptionScore.help_text }} </div>
+                    {{ form.descriptionScore }}
+                </span>
+            </div>
+            <div class="row">
+                {% if form.instance.id %}
+                    <div class="col-md-1 order-md-2 mb-10">
+                        <a href="{% url "score:score_del" discipline_pk=form.instance.disciplineId.id score_pk=form.instance.id %}"
+                           class="btn btn-lg btn-outline-red btn-secondary text-button "
+                           style="margin-top: 15px; color: #fff; font-weight: 400;">Удалить</a>
+                    </div>
+                {% endif %}
+
+
+                <div class="col-md-10 order-md-1 mb-1">
+                    <a href="{% url "discipline:discipline_detail" discipline_last_pk %}"
+                       class="btn btn-lg btn-outline-dark btn-secondary text-button "
+                       style="margin-top: 15px; color: #fff; font-weight: 400;">&lt Вернуться</a>
+
+                    <input class="btn btn-lg btn-outline-dark btn-secondary text-button "
+                           style="margin-top: 15px; color: #fff ; font-weight: 400; background-color: green;"
+                           type="submit" value="Записать оценку">
+                </div>
+            </div>
+            {{ form.teachIdToScore }}
+            {{ form.materialId }}
+            {{ form.studentId }}
+            {{ form.disciplineId }}
+            {{ form.id }}
+
+
+        </form>
+
+
+    </div>
+</section>
+
+
+{% block footer %}
+    {% include "journal/footer.html" %}
+{% endblock %}
+
+
+</body>
+</html>

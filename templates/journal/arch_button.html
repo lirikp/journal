@@ -1,0 +1,37 @@
+<div class="row" style="margin: 10px auto;">
+    <div class="btn-group">
+        <div class="btn-group">
+            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                Выбор отчёта
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="{% url 'reports:report_schedule' %}">Расписание
+                    студента</a>
+                <a class="dropdown-item" href="{% url 'reports:report_scorecard' %}">Оценочная
+                    ведомость</a>
+                <a class="dropdown-item" href="{% url 'reports:report_all_student_all_items_with_year' %}">Оценки
+                    по
+                    студентам</a>
+                <a class="dropdown-item" href="{% url 'reports:report_ktp' %}">Отчёт КТП</a>
+            </div>
+        </div>
+        {% if user.is_staff %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    Дата архива
+                </button>
+                <div class="dropdown-menu">
+
+                    {% for arch_year in arch_dates %}
+                        <a class="dropdown-item" href="{% url 'arch:main_arch' arch_year.d %}">{{ arch_year.d }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+
+    </div>
+
+</div>

@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Main page</title>
+    <link href="{% static "css/main.css" %}" rel="stylesheet">
+</head>
+<body>
+<div id="content">
+    {% block content %}
+    {% endblock %}
+</div>
+<div id="sidebar">
+    <table>
+
+
+        {% for material in materials %}
+            <tr>
+                <td>{{ material.id }}</td>
+                <td>{{ material.dateInit }}</td>
+                <td>{{ material.countHour }}</td>
+                <td>{{ material.isCount }}</td>
+                <td>{{ material.topic }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+</div>
+</body>
+</html>

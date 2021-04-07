@@ -1,0 +1,104 @@
+{% load static %}
+{% load templ_extras %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Изменение в материале</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sen:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static "journal/css/bootstrap.min.css" %}">
+
+    <script src="{% static "journal/js/jquery-3.3.1.slim.min.js" %}"></script>
+    <script src="{% static "journal/js/popper.min.js" %}"></script>
+    <script src="{% static "journal/js/bootstrap.min.js" %}"></script>
+    <link rel="stylesheet" href="{% static "journal/css/main.css" %}">
+
+</head>
+<body>
+{% block header %}
+    {% include "journal/header.html" %}
+{% endblock %}
+
+<section id="tabs" class="project-tab">
+    <div class="container">
+        <div class="py-3 text-left">
+            <h4>Дисциплина: {{ disciplineDetail }} ({% text_week_day disciplineDetail.dayofWeekStartLecture False %},
+                            {{ disciplineDetail.timeStartLecture|date:"H:i" }}-{{ disciplineDetail.timeFinishLecture|date:"H:i" }})</h4>
+        </div>
+
+        <form action="." method="post">
+            {% csrf_token %}
+
+            <div class="row"><label>Дата события</label>
+
+            </div>
+            <div class="row"><span>{{ form.dateInit }} <div style="color: red"> {{ form.dateInit.errors }}</div></span>
+            </div>
+
+            <div class="row" style="margin-top: 15px;">
+                <label>Кол-во уч. часов</label>
+
+            </div>
+            <div class="row"><span>{{ form.countHour }} <div style="color: red"> {{ form.countHour.errors }}</div></span></div>
+
+
+            <div class="row" style="margin-top: 15px;">
+                <label>Что пройдено на уроке<p style="color: red;">* Обязательно для групповых дисциплин</p></label>
+                <div style="color: red"> {{ form.topic.errors }}</div>
+            </div>
+            <div class="row">{{ form.topic }}</div>
+
+            <div class="row" style="margin-top: 15px;">
+                <label>Задание на дом<p style="color: red;">* Обязательно для групповых дисциплин</p></label>
+                <div style="color: red"> {{ form.homework.errors }} {{ form.homework.help_text }} </div>
+            </div>
+            <div class="row">{{ form.homework }}</div>
+
+            <div class="row" style="margin-top: 15px;">
+                <label>Тип встречи</label>
+                <div style="color: red"> {{ form.meetId.errors }}</div>
+            </div>
+            <div class="row">{{ form.meetId }}</div>
+            <div class="row">
+                {% if form.instance.id %}
+                    <div class="col-md-1 order-md-2 mb-10">
+                        <a href="{% url "material:material_del" discipline_pk=form.instance.discipMaterialId.id material_pk=form.instance.id %}"
+                           class="btn btn-lg btn-outline-red btn-secondary text-button "
+                           style="margin-top: 15px; color: #fff; font-weight: 400;">Удалить</a>
+                    </div>
+                {% endif %}
+                <div class="col-md-10 order-md-1 mb-1">
+                    <a href="{% url "discipline:discipline_detail" discipline_last_pk %}"
+                       class="btn btn-lg btn-outline-dark btn-secondary text-button "
+                       style="margin-top: 15px; color: #fff; font-weight: 400;">&lt Вернуться</a>
+
+                    <input class="btn btn-lg btn-outline-dark btn-secondary text-button "
+                           style="margin-top: 15px; color: #fff ; font-weight: 400; background-color: green;"
+                           type="submit" value="Записать материал">
+                </div>
+            </div>
+            {{ form.discipMaterialId }}
+            {{ form.teachIdToMaterial }}
+            {{ form.isCount }}
+            {{ form.id }}
+
+        </form>
+
+
+    </div>
+</section>
+
+
+{% block footer %}
+    {% include "journal/footer.html" %}
+{% endblock %}
+
+
+</body>
+</html>

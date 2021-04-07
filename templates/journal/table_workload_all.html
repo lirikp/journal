@@ -1,0 +1,58 @@
+{% load templ_extras %}
+{% make_workload_all table_workload as table %}
+
+<table class="table-workload " cellspacing="0">
+    <tr>
+        <td colspan="3"></td>
+        <td colspan="3"><h3>Бюджетное</h3></td>
+        <td colspan="3"><h3>Платное</h3></td>
+    </tr>
+    <tr>
+        <td><h5>№</h5></td>
+        <td><h5>ФИО</h5></td>
+        <td><h5>Отделение</h5></td>
+        <td><h5>1 семестр</h5></td>
+        <td><h5>2 семестр</h5></td>
+        <td style="background-color: chartreuse;"><h5>Итого</h5></td>
+        <td><h5>1 семестр</h5></td>
+        <td><h5>2 семестр</h5></td>
+        <td style="background-color: chartreuse;"><h5>Итого</h5></td>
+    </tr>
+    {% for fio,info_list in table.items %}
+
+        <tr
+                {% if info_list|check_itogo and info_list.7 %}
+                    class="color-content" style="border-top: 6px solid #5c63f9;"
+                {% elif info_list|check_itogo %}
+                    class="color-content"
+                {% elif info_list.7 %}
+                    style="border-top: 6px solid #5c63f9;"
+                {% endif %}
+        >
+            <td>{{ info_list.8 }}</td>
+            <td class="text-table" style="text-align: left; padding-left: 10px; ">
+                {{ fio }}
+            </td>
+            {% define info_list.0 as departament_name %}
+            <td class="text-table;">{{ info_list.0 }}</td>
+            <td>{{ info_list.1 }}</td>
+            <td>{{ info_list.2 }}</td>
+            <td style="background-color: chartreuse;">{{ info_list.3 }}</td>
+            <td>{{ info_list.4 }}</td>
+            <td>{{ info_list.5 }}</td>
+            <td style="background-color: chartreuse;">{{ info_list.6 }}</td>
+
+
+        </tr>
+    {% endfor %}
+
+
+</table>
+
+{% comment %}
+{% if disciplines|length %}
+{% endcomment %}
+
+{% comment %}
+{% endif %}
+{% endcomment %}

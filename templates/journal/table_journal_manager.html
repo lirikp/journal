@@ -1,0 +1,153 @@
+{% load templ_extras %}
+
+{% comment %}
+{% if disciplines|length %}
+{% endcomment %}
+    <div id="accordion">
+        {% for discipline in disciplines_for_manager %}
+            <div class="card">
+                <div class="card-header" {% if discipline.paid_discip %} style="background-color: violet" {% endif %}>
+                    <a class="card-link" data-toggle="collapse" href="#collapse{{ forloop.counter }}">
+                        {{ discipline }}
+                        ({% text_week_day discipline.dayofWeekStartLecture False %},
+                        {{ discipline.timeStartLecture|date:"H:i" }}-{{ discipline.timeFinishLecture|date:"H:i" }})
+                        {% compare_dates_with_now discipline.dateFinish as date_answ %}
+                        {% if date_answ %}
+                            (Закрыто {{ discipline.dateFinish }})
+                        {% endif %}
+
+                    </a>
+                </div>
+                <div id="collapse{{ forloop.counter }}" class="collapse" data-parent="#accordion">
+                    <div class="card-body">
+                        <nav class="pan-nav-set">
+                            <div class="nav nav-tabs nav-fill" id="nav-tab{{ forloop.counter }}" role="tablist">
+                                <a class="nav-item nav-link active" id="nav-home-tab{{ forloop.counter }}"
+                                   data-toggle="tab"
+                                   href="#nav-home{{ forloop.counter }}"
+                                   role="tab{{ forloop.counter }}" aria-controls="nav-home{{ forloop.counter }}"
+                                   aria-selected="true">Оценки по
+                                    дисциплине</a>
+                                <a class="nav-item nav-link " id="nav-profile-tab{{ forloop.counter }}"
+                                   data-toggle="tab"
+                                   href="#nav-profile{{ forloop.counter }}"
+                                   role="tab{{ forloop.counter }}" aria-controls="nav-profile{{ forloop.counter }}"
+                                   aria-selected="false">Краткое
+                                    содержание
+                                    материала</a>
+                            </div>
+                        </nav>
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="nav-home{{ forloop.counter }}"
+                                 role="tabpanel"
+                                 aria-labelledby="nav-home-tab{{ forloop.counter }}">
+                                <div class="outer">
+                                    <div class="inner">
+                                        <table class="table-discip-score " cellspacing="0">
+                                            <tbody>
+                                            {% takes_data_for_discipline_list_manager discipline.id as students_from_discipline %}
+                                            {% count_students_from_discipline students_from_discipline as data %}
+                                            {% take_score_students_from_data data as scores %}
+                                            {% take_dates_students_from_data data as dates %}
+                                            {% if data|slice:"1:2"|last|length > 0 %}
+                                                <tr>
+                                                    <th style="width: 33px; text-align: center;">№</th>
+                                                    <th style="left: 31px;">Фамилия Имя</th>
+                                                    {% for date, m_id in dates.items %}
+                                                        <td style="width: 50px;
+                                                                {% type_lesson data m_id as meet_not_lesson %}{% if meet_not_lesson == 'itogo_1' or meet_not_lesson == 'itogo_2' or meet_not_lesson == 'itogo_3' or meet_not_lesson == 'itogo_4' %}
+                                                                background-color: #B6EB9E;
+                                                            {% elif meet_not_lesson == 'exam' %}
+                                                                background-color: #f1e214;
+                                                            {% endif %}">{{ date|date:'d.m' }}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                                {% for student_name,scores in scores.items %}
+                                                    <tr>
+                                                        <th style="width: 33px; text-align: center; color: darkgrey; font-weight: 300;">{{ forloop.counter }}</th>
+
+                                                        {% for date_score, score in scores.items %}
+                                                            {% if forloop.first %}
+
+                                                                <th style="left: 31px;">{{ student_name }}</th>
+                                                            {% endif %}
+                                                            <td style="{% if score.status_in_study != 0 %}background-color: #c8cbcf;{% endif %}">
+                                                                {% if score.result is not None %}
+                                                                    {{ score.result }}
+                                                                {% else %}
+                                                                    &hellip;
+                                                                {% endif %}
+                                                            </td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                {% endfor %}
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% comment %} Добываем данные для таблицы материалов{% endcomment %}
+                            {% takes_data_for_material_list_manager discipline.id as material_table %}
+                            {% count_materials material_table as cnt %}
+
+                            <div class="tab-pane fade " id="nav-profile{{ forloop.counter }}" role="tabpanel"
+                                 aria-labelledby="nav-profile-tab{{ forloop.counter }}"
+                                 style="margin-top: 20px;">
+                                <div class="table-container table-responsive">
+                                    <table class="table-discip-material">
+                                        <thead>
+                                        <tr>
+                                            <th>Дата события</th>
+                                            <th>Кол-во уч. часов</th>
+                                            <th>Что пройдено на уроке</th>
+                                            <th>Задание на дом</th>
+                                            <th>Тип встречи</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if cnt > 0 %}
+                                            {% for material in material_table %}
+                                                {% if forloop.counter|divisibleby:2 %}
+                                                    <tr class="even">
+                                                        {% else %}
+                                                    <tr class="odd">
+                                                {% endif %}
+                                            <td>
+                                                {{ material.dateInit|date:'d.m.Y' }}
+                                            </td>
+                                            <td>{{ material.countHour }}</td>
+                                            <td class="table-discip-material-topic">{{ material.topic }}</td>
+                                            <td>{{ material.homework }}</td>
+                                            <td>{{ material.meetId }}</td>
+                                            </tr>
+
+
+                                            {% endfor %}
+                                        {% endif %}
+
+                                        {% count_hours material_table as total_hours %}
+                                        {% if total_hours %}
+                                            <tr>
+
+                                                <td>Всего:</td>
+                                                <td>{{ total_hours }}</td>
+                                                <td colspan="3"></td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+
+{% comment %}
+{% endif %}
+{% endcomment %}

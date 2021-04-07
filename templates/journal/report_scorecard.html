@@ -1,0 +1,141 @@
+{% load static %}
+{% load templ_extras %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Оценочная ведомость</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sen:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static "journal/css/bootstrap.min.css" %}">
+
+    <script src="{% static "journal/js/jquery-3.3.1.slim.min.js" %}"></script>
+    <script src="{% static "journal/js/popper.min.js" %}"></script>
+    <script src="{% static "journal/js/bootstrap.min.js" %}"></script>
+    <link rel="stylesheet" href="{% static "journal/css/main.css" %}">
+
+</head>
+<body>
+{% block header %}
+    {% include "journal/header.html" %}
+{% endblock %}
+
+<section id="tabs" class="project-tab">
+    <div class="container">
+        {% block menu_button %}
+            {% include "journal/menu_button.html" %}
+        {% endblock %}
+
+        <form action="." method="post">
+
+            {% csrf_token %}
+            <div class="text-center" style="margin-top: 15px;">
+                <h3>Оценочная ведомость</h3>
+            </div>
+
+            <div class="row"><label class="scorecard-label">Полугодие:</label>
+            </div>
+            <div class="row"><span>{{ form.halfYear }} <div style="color: red"> {{ form.halfYear.errors }}</div></span>
+            </div>
+
+            <div class="row"><label class="scorecard-label">Отделение:</label>
+            </div>
+            <div class="row"><span>{{ form.nameDep }} <div style="color: red"> {{ form.nameDep.errors }}</div></span>
+            </div>
+
+            <div class="row"><label class="scorecard-label">Курс:</label>
+            </div>
+            <div class="row"><span>{{ form.course }} <div style="color: red"> {{ form.course.errors }}</div></span>
+            </div>
+
+            <div class="row"><label class="scorecard-label">Платное:</label>
+            </div>
+            <div class="row"><span>{{ form.paid }} <div style="color: red"> {{ form.paid.errors }}</div></span>
+            </div>
+
+
+            <div class="col-md-10 order-md-1 mb-1">
+                <input class="btn btn-lg btn-outline-dark btn-secondary text-button "
+                       style="margin-top: 15px; color: #fff ; font-weight: 400;"
+                       type="submit" value="Посмотреть ведомость">
+            </div>
+
+            {% if report_scorecard|length %}
+                {% make_data_from_report_scorecard report_scorecard as data %}
+                {% take_data_from_data_report_scorecard data as items_discip %}
+                <div class="text-center" style="margin-top: 15px;">
+                    <h3>Период: {{ d_left|date:'d-m-Y' }} <-> {{ d_right|date:'d-m-Y' }} </h3>
+                </div>
+
+                <div class="outer">
+                    <div class="inner-table-scorecard">
+                        <table class="table-scorecard" cellspacing="0">
+                            <tbody>
+                            <tr style="height: 150px;">
+                                <th>ФИО студента</th>
+                                {% for id, vol in items_discip.items %}
+                                    <td class="head-transform-90">
+                                        {{ vol }}
+                                        {% comment %}<p class="vertical">{{ vol }}</p>{% endcomment %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                            {% for FIO in data|slice:"1:2"|last %}
+                                <tr>
+                                    <th>
+                                        {{ FIO }}
+                                    </th>
+
+                                    {% for id, vol in items_discip.items %}
+                                        {% get_value_from_simple_matrix data|slice:"1:2"|last id FIO as value %}
+                                        {% get_status_from_simple_matrix data|slice:"1:2"|last id FIO as status_in_study %}
+                                        {% get_title_from_simple_matrix data|slice:"1:2"|last id FIO as title %}
+                                        {% get_meetName_from_simple_matrix data|slice:"1:2"|last id FIO as meetName %}
+                                        <td
+                                                title="{{ title }}"
+                                                {% if status_in_study != 0 %}
+                                                    style="background-color: #c8cbcf;"
+                                                {% elif value == '2' %}
+                                                    style="background-color: red"
+                                                {% elif value == '2+' %}
+                                                    style="background-color: red"
+                                                {% elif value == 'Н' %}
+                                                    style="background-color: red"
+                                                {% elif value == 'н.с.' %}
+                                                    style="background-color: red"
+                                                {% elif meetName == 'exam' %}
+                                                    style="background-color: #f1e214"
+                                                {% endif %}>
+                                            {{ value }}
+                                        </td>
+
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            {% endif %}
+
+        </form>
+
+    </div>
+
+
+</section>
+
+
+{% block footer %}
+    {% include "journal/footer.html" %}
+{% endblock %}
+
+
+</body>
+</html>
